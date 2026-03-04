@@ -4,7 +4,7 @@ export class PostgresCreateUserRepository {
     async execute(createUserParams) {
         //criando os paremetros do usuario
         const results = await PostgresHelper.query(
-            'INSERT INTO users (ID, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            'INSERT INTO users (id, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [
                 createUserParams.id,
                 createUserParams.first_name,
@@ -14,6 +14,6 @@ export class PostgresCreateUserRepository {
             ],
         )
 
-        return results.rows[0]
+        return results[0]
     }
 }
