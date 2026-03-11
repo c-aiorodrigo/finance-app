@@ -1,8 +1,8 @@
 import { PostgresUpdateUserRepository } from '../repositories/postgres/update-user.js'
 import { PostgresGetUserByEmailRepository } from '../repositories/postgres/get-user-by-email.js'
-import { bcrypt } from 'bcrypt'
+import bcrypt from 'bcrypt'
 
-export class updateUserUseCase {
+export class UpdateUserUseCase {
     async execute(userId, updateUserParams) {
         //1 - Se o email estiver sendo alterado, verificar se ele já está em uso:
 
@@ -32,11 +32,10 @@ export class updateUserUseCase {
         }
 
         const postgresUpdateUserUseCase = new PostgresUpdateUserRepository()
-        const updateUser = await postgresUpdateUserUseCase.execute(
-            userId,
-            updateUserParams,
-        )
+        const updateUser = await postgresUpdateUserUseCase.execute(userId, user)
+        // eslint-disable-next-line no-unused-vars
+        const { password, ...userWithoutPassword } = updateUser
 
-        return updateUser
+        return userWithoutPassword
     }
 }

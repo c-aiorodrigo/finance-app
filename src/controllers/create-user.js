@@ -17,7 +17,7 @@ export class CreateUserController {
             for (const field of requiredFields) {
                 if (!params[field] || params[field].trim().length === 0) {
                     return badRequest({
-                        message: 'Password must be a least 6 characters.',
+                        message: 'The fields can not be empty!',
                     })
                 }
 
