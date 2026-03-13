@@ -1,20 +1,27 @@
 import { UpdateUserUseCase } from '../use-cases/update-user.js'
-import { badRequest, internalServerError, ok } from './helpers.js'
-import validator from 'validator'
+import { badRequest, internalServerError, ok } from './helpers/http.js'
+import {
+    checkIfEmailIsValid,
+    checkIfIdIsValid,
+    checkIfPasswordIsValid,
+    invalidEmailResponse,
+    invalidIdResponse,
+    invalidPasswordResponse,
+} from './helpers/user.js'
 
 export class UpdateUserController {
     async execute(httpReq) {
         try {
             const userId = httpReq.params.id
 
-            const isIdValid = validator.isUUID(userId)
+            const isIdValid = checkIfIdIsValid(userId)
             if (!isIdValid) {
-                return badRequest({ message: 'The Id is not valid' })
+                return invalidIdResponse
             }
 
-            const updateParams = httpReq.body
+            const params = httpReq.body
 
-            const isBodyEmpty = Object.keys(updateParams).length === 0
+            const isBodyEmpty = Object.keys(params).length === 0
 
             if (isBodyEmpty) {
                 return badRequest({
@@ -29,7 +36,7 @@ export class UpdateUserController {
                 'password',
             ]
 
-            const someFieldIsNotAllowes = Object.keys(updateParams).some(
+            const someFieldIsNotAllowes = Object.keys(params).some(
                 (field) => !allowedFields.includes(field),
             )
 
@@ -39,35 +46,32 @@ export class UpdateUserController {
                 })
             }
 
-            const someFieldIsBlank = Object.keys(updateParams).some(
+            const someFieldIsBlank = Object.keys(params).some(
                 (field) =>
-                    typeof updateParams[field] === 'string' &&
-                    updateParams[field].trim().length === 0,
+                    typeof params[field] === 'string' &&
+                    params[field].trim().length === 0,
             )
 
             if (someFieldIsBlank) {
                 return badRequest({ message: 'Some provided field is blank' })
             }
 
-            if (updateParams.password && updateParams.password.length < 6) {
-                return badRequest({
-                    message: 'Password must be a least 6 characters.',
-                })
+            if (params.password) {
+                if (!checkIfPasswordIsValid(params.password)) {
+                    return invalidPasswordResponse
+                }
             }
 
-            if (updateParams.email) {
-                const emailIsValid = validator.isEmail(updateParams.email)
+            if (params.email) {
+                const emailIsValid = checkIfEmailIsValid(params.email)
                 if (!emailIsValid) {
-                    return badRequest({ message: 'Invalid Email' })
+                    return invalidEmailResponse
                 }
             }
 
             const updateUserUseCase = new UpdateUserUseCase()
 
-            const updateUser = await updateUserUseCase.execute(
-                userId,
-                updateParams,
-            )
+            const updateUser = await updateUserUseCase.execute(userId, params)
 
             return ok(updateUser)
         } catch (error) {

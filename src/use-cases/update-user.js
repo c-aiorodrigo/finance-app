@@ -13,7 +13,7 @@ export class UpdateUserUseCase {
                 updateUserParams.email,
             )
 
-            if (emailAlreadyExist) {
+            if (emailAlreadyExist && emailAlreadyExist.id !== userId) {
                 throw new Error('The email already exists')
             }
         }
