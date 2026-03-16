@@ -9,9 +9,9 @@ export class GetUserByIdUseCase {
         if (!user) {
             return null
         }
+        // eslint-disable-next-line no-unused-vars
+        const { password, ...userWithoutPassword } = user
 
-        delete user.password
-
-        return user
+        return userWithoutPassword
     }
 }
