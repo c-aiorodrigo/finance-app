@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import {
     CreateUserController,
+    DeleteUserController,
     GetUserByIdController,
     UpdateUserController,
 } from './src/controllers/index.js'
@@ -37,6 +38,15 @@ app.patch('/api/users/:id', async (request, response) => {
     const updateUserResponse = await updateUserController.execute(request)
 
     response.status(updateUserResponse.statusCode).json(updateUserResponse.body)
+})
+
+//DELELTE//
+app.delete('/api/user/:id', async (request, response) => {
+    const deleteUserController = new DeleteUserController()
+
+    const deleteUserResponse = await deleteUserController.execute(request)
+
+    response.status(deleteUserResponse.statusCode).json(deleteUserResponse.body)
 })
 
 app.listen(process.env.PORT_API, () => {
