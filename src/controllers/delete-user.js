@@ -1,3 +1,4 @@
+import { DeleteUserUseCase } from '../use-cases/index.js'
 import {
     checkIfIdIsValid,
     internalServerError,
@@ -17,8 +18,8 @@ export class DeleteUserController {
                 return invalidIdResponse
             }
 
-            const deleteUserController = new DeleteUserController()
-            const deletedUser = await deleteUserController.execute(userId)
+            const deleteUserUseCase = new DeleteUserUseCase()
+            const deletedUser = await deleteUserUseCase.execute(userId)
 
             if (!deletedUser) {
                 return notFound({ message: 'User not found' })
