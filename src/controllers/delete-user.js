@@ -18,7 +18,7 @@ export class DeleteUserController {
             }
 
             const deleteUserController = new DeleteUserController()
-            const deletedUser = deleteUserController.execute(userId)
+            const deletedUser = await deleteUserController.execute(userId)
 
             if (!deletedUser) {
                 return notFound({ message: 'User not found' })
