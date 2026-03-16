@@ -1,30 +1,30 @@
-import { GetUserByIdUseCase } from '../use-cases/index.js'
 import {
+    checkIfIdIsValid,
     internalServerError,
+    invalidIdResponse,
     notFound,
     ok,
-    checkIfIdIsValid,
-    invalidIdResponse,
 } from './helpers/index.js'
 
-export class GetUserByIdController {
+export class DeleteUserController {
     async execute(httpReq) {
         try {
-            const userId = httpReq.params.id
+            const userId = httpReq.params.userId
 
             const isIdValid = checkIfIdIsValid(userId)
+
             if (!isIdValid) {
                 return invalidIdResponse
             }
 
-            const getUserByIdUseCase = new GetUserByIdUseCase()
-            const user = await getUserByIdUseCase.execute(userId)
+            const deleteUserController = new DeleteUserController()
+            const deletedUser = deleteUserController.execute(userId)
 
-            if (!user) {
+            if (!deletedUser) {
                 return notFound({ message: 'User not found' })
             }
 
-            return ok(user)
+            return ok(deletedUser)
         } catch (error) {
             console.error(error)
             return internalServerError()

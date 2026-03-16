@@ -45,7 +45,7 @@ export class CreateUserController {
             //Retornando resposta para o usúario
         } catch (error) {
             console.error(error)
-            return internalServerError
+            return internalServerError()
         }
     }
 }
