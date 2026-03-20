@@ -1,10 +1,10 @@
-import {
-    PostgresUpdateUserRepository,
-    PostgresGetUserByEmailRepository,
-} from '../repositories/postgres/index.js'
+import { PostgresGetUserByEmailRepository } from '../repositories/postgres/index.js'
 import bcrypt from 'bcrypt'
 
 export class UpdateUserUseCase {
+    constructor(updateUserRepository) {
+        this.updateUserRepository = updateUserRepository
+    }
     async execute(userId, updateUserParams) {
         //1 - Se o email estiver sendo alterado, verificar se ele já está em uso:
 
@@ -33,8 +33,7 @@ export class UpdateUserUseCase {
             user.password = hashedPassword
         }
 
-        const postgresUpdateUserUseCase = new PostgresUpdateUserRepository()
-        const updateUser = await postgresUpdateUserUseCase.execute(userId, user)
+        const updateUser = await this.updateUserRepository.execute(userId, user)
         // eslint-disable-next-line no-unused-vars
         const { password, ...userWithoutPassword } = updateUser
 
