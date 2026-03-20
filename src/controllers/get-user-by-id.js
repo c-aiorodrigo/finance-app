@@ -1,4 +1,3 @@
-import { GetUserByIdUseCase } from '../use-cases/index.js'
 import {
     internalServerError,
     notFound,
@@ -8,6 +7,9 @@ import {
 } from './helpers/index.js'
 
 export class GetUserByIdController {
+    constructor(getUserByIdUseCase) {
+        this.getUserByIdUseCase = getUserByIdUseCase
+    }
     async execute(httpReq) {
         try {
             const userId = httpReq.params.id
@@ -17,8 +19,7 @@ export class GetUserByIdController {
                 return invalidIdResponse
             }
 
-            const getUserByIdUseCase = new GetUserByIdUseCase()
-            const user = await getUserByIdUseCase.execute(userId)
+            const user = await this.getUserByIdUseCase.execute(userId)
 
             if (!user) {
                 return notFound({ message: 'User not found' })
