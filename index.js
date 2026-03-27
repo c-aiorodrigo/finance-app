@@ -1,16 +1,16 @@
 import 'dotenv/config'
 import express from 'express'
-import { DeleteUserController } from './src/controllers/index.js'
-import { PostgresDeleteUserRepository } from './src/repositories/postgres/index.js'
-import { DeleteUserUseCase } from './src/use-cases/index.js'
 import {
+    makeDeleteController,
     makeGetUserByIdController,
     makeUpdateUserController,
+    makeCreateUserController,
 } from './src/factories/controllers/user.js'
 
 const app = express()
 app.use(express.json())
 
+//USER ROUTES//
 app.get('/api/users/:id', async (request, response) => {
     const getUserByIdController = makeGetUserByIdController()
     const getUserByIdResponse = await getUserByIdController.execute(request)
@@ -19,32 +19,27 @@ app.get('/api/users/:id', async (request, response) => {
         .status(getUserByIdResponse.statusCode)
         .json(getUserByIdResponse.body)
 })
-
 app.post('/api/users', async (request, response) => {
-    const createUserController = makeGetUserByIdController()
+    const createUserController = makeCreateUserController()
     const createUserResponse = await createUserController.execute(request)
 
     //createUserResponse = {statusCode, body}
     response.status(createUserResponse.statusCode).json(createUserResponse.body)
 })
-
 app.patch('/api/users/:id', async (request, response) => {
     const updateUserController = makeUpdateUserController()
     const updateUserResponse = await updateUserController.execute(request)
 
     response.status(updateUserResponse.statusCode).json(updateUserResponse.body)
 })
-
-//DELETE//
-const deleteUserRepository = new PostgresDeleteUserRepository()
-const deleteUserUseCase = new DeleteUserUseCase(deleteUserRepository)
-const deleteUserController = new DeleteUserController(deleteUserUseCase)
-
 app.delete('/api/users/:id', async (request, response) => {
+    const deleteUserController = makeDeleteController()
     const deleteUserResponse = await deleteUserController.execute(request)
 
     response.status(deleteUserResponse.statusCode).json(deleteUserResponse.body)
 })
+
+//LISTEN//
 
 app.listen(process.env.PORT_API, () => {
     console.log('Abrindo o predio 8080!')
