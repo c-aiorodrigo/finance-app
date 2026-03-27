@@ -6,14 +6,29 @@ import {
     GetUserByIdController,
     UpdateUserController,
 } from './src/controllers/index.js'
+import {
+    PostgresGetUserByIdRepository,
+    PostgresCreateUserRepository,
+    PostgresUpdateUserRepository,
+    PostgresDeleteUserRepository,
+    PostgresGetUserByEmailRepository,
+} from './src/repositories/postgres/index.js'
+import {
+    GetUserByIdUseCase,
+    CreateUserUseCase,
+    UpdateUserUseCase,
+    DeleteUserUseCase,
+} from './src/use-cases/index.js'
 
 const app = express()
 app.use(express.json())
 
 //GET//
-app.get('/api/users/:id', async (request, response) => {
-    const getUserByIdController = new GetUserByIdController()
+const getUserByIdRepository = new PostgresGetUserByIdRepository()
+const getUserByIdUseCase = new GetUserByIdUseCase(getUserByIdRepository)
+const getUserByIdController = new GetUserByIdController(getUserByIdUseCase)
 
+app.get('/api/users/:id', async (request, response) => {
     const getUserByIdResponse = await getUserByIdController.execute(request)
 
     response
@@ -22,28 +37,38 @@ app.get('/api/users/:id', async (request, response) => {
 })
 
 //POST//
-app.post('/api/users', async (request, response) => {
-    const createUserController = new CreateUserController()
+const getUserByEmail = new PostgresGetUserByEmailRepository()
+const createUserRepository = new PostgresCreateUserRepository()
+const createUserUseCase = new CreateUserUseCase(
+    getUserByEmail,
+    createUserRepository,
+)
+const createUserController = new CreateUserController(createUserUseCase)
 
-    //createUserResponse = {statusCode, body}
+app.post('/api/users', async (request, response) => {
     const createUserResponse = await createUserController.execute(request)
 
+    //createUserResponse = {statusCode, body}
     response.status(createUserResponse.statusCode).json(createUserResponse.body)
 })
 
 //PATCH//
-app.patch('/api/users/:id', async (request, response) => {
-    const updateUserController = new UpdateUserController()
+const updateUserRepository = new PostgresUpdateUserRepository()
+const updateUserUseCase = new UpdateUserUseCase(updateUserRepository)
+const updateUserController = new UpdateUserController(updateUserUseCase)
 
+app.patch('/api/users/:id', async (request, response) => {
     const updateUserResponse = await updateUserController.execute(request)
 
     response.status(updateUserResponse.statusCode).json(updateUserResponse.body)
 })
 
 //DELELTE//
-app.delete('/api/user/:id', async (request, response) => {
-    const deleteUserController = new DeleteUserController()
+const deleteUserRepository = new PostgresDeleteUserRepository()
+const deleteUserUseCase = new DeleteUserUseCase(deleteUserRepository)
+const deleteUserController = new DeleteUserController(deleteUserUseCase)
 
+app.delete('/api/users/:id', async (request, response) => {
     const deleteUserResponse = await deleteUserController.execute(request)
 
     response.status(deleteUserResponse.statusCode).json(deleteUserResponse.body)

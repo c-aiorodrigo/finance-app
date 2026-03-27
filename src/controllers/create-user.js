@@ -1,4 +1,3 @@
-import { CreateUserUseCase } from '../use-cases/index.js'
 import {
     badRequest,
     created,
@@ -10,6 +9,9 @@ import {
 } from './helpers/index.js'
 
 export class CreateUserController {
+    constructor(createUserCase) {
+        this.createUserCase = createUserCase
+    }
     async execute(httpReq) {
         try {
             const params = httpReq.body
@@ -29,17 +31,16 @@ export class CreateUserController {
                 }
 
                 if (!checkIfPasswordIsValid(params.password)) {
-                    return invalidPasswordResponse
+                    return invalidPasswordResponse()
                 }
 
                 const emailIsValid = checkIfEmailIsValid(params.email)
                 if (!emailIsValid) {
-                    return invalidEmailResponse
+                    return invalidEmailResponse()
                 }
 
                 //Chamando Use Case
-                const createUserCase = new CreateUserUseCase()
-                const createdUser = await createUserCase.execute(params)
+                const createdUser = await this.createUserCase.execute(params)
                 return created(createdUser)
             }
             //Retornando resposta para o usúario

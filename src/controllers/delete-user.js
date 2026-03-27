@@ -12,12 +12,12 @@ export class DeleteUserController {
     }
     async execute(httpReq) {
         try {
-            const userId = httpReq.params.userId
+            const userId = httpReq.params.id
 
             const isIdValid = checkIfIdIsValid(userId)
 
             if (!isIdValid) {
-                return invalidIdResponse
+                return invalidIdResponse()
             }
 
             const deletedUser = await this.deleteUserUseCase.execute(userId)

@@ -16,7 +16,7 @@ export class GetUserByIdController {
 
             const isIdValid = checkIfIdIsValid(userId)
             if (!isIdValid) {
-                return invalidIdResponse
+                return invalidIdResponse()
             }
 
             const user = await this.getUserByIdUseCase.execute(userId)

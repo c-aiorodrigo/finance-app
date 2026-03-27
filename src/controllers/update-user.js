@@ -12,7 +12,7 @@ import {
 
 export class UpdateUserController {
     constructor(updateUserUseCase) {
-        this.UpdateUserUseCase = updateUserUseCase
+        this.updateUserUseCase = updateUserUseCase
     }
     async execute(httpReq) {
         try {
@@ -20,7 +20,7 @@ export class UpdateUserController {
 
             const isIdValid = checkIfIdIsValid(userId)
             if (!isIdValid) {
-                return invalidIdResponse
+                return invalidIdResponse()
             }
 
             const params = httpReq.body
@@ -62,14 +62,14 @@ export class UpdateUserController {
 
             if (params.password) {
                 if (!checkIfPasswordIsValid(params.password)) {
-                    return invalidPasswordResponse
+                    return invalidPasswordResponse()
                 }
             }
 
             if (params.email) {
                 const emailIsValid = checkIfEmailIsValid(params.email)
                 if (!emailIsValid) {
-                    return invalidEmailResponse
+                    return invalidEmailResponse()
                 }
             }
 
