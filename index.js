@@ -54,7 +54,10 @@ app.post('/api/users', async (request, response) => {
 
 //PATCH//
 const updateUserRepository = new PostgresUpdateUserRepository()
-const updateUserUseCase = new UpdateUserUseCase(updateUserRepository)
+const updateUserUseCase = new UpdateUserUseCase(
+    getUserByEmail,
+    updateUserRepository,
+)
 const updateUserController = new UpdateUserController(updateUserUseCase)
 
 app.patch('/api/users/:id', async (request, response) => {
@@ -63,7 +66,7 @@ app.patch('/api/users/:id', async (request, response) => {
     response.status(updateUserResponse.statusCode).json(updateUserResponse.body)
 })
 
-//DELELTE//
+//DELETE//
 const deleteUserRepository = new PostgresDeleteUserRepository()
 const deleteUserUseCase = new DeleteUserUseCase(deleteUserRepository)
 const deleteUserController = new DeleteUserController(deleteUserUseCase)
