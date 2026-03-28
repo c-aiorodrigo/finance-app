@@ -1,0 +1,25 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Finance-App",
+            "database": "root",
+            "username": "senha"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "name": "financeapp",
+            "database": "financeapp",
+            "username": "root"
+        }
+    ]
+}

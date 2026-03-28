@@ -1,0 +1,18 @@
+services:
+    db:
+        image: postgres:16-alpine
+        container_name: postgres-finance-api
+        restart: always
+        ports:
+            # Puxa a sua variável DB_PORT
+            - '${DB_PORT:-5432}:5432'
+        environment:
+            # Lado esquerdo (Postgres) : Lado direito (Seu .env)
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
