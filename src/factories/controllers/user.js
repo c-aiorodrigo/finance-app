@@ -4,12 +4,12 @@ import {
     GetUserByIdController,
     UpdateUserController,
 } from '../../controllers/index.js'
-import { PostgresGetUserByIdRepository } from '../../repositories/postgres/get-user-by-id.js'
 import {
     PostgresCreateUserRepository,
     PostgresDeleteUserRepository,
     PostgresGetUserByEmailRepository,
     PostgresUpdateUserRepository,
+    PostgresGetUserByIdRepository,
 } from '../../repositories/postgres/index.js'
 import {
     CreateUserUseCase,
