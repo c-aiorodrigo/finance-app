@@ -6,7 +6,7 @@ import {
     checkIfPasswordIsValid,
     invalidEmailResponse,
     invalidPasswordResponse,
-} from './helpers/index.js'
+} from '../helpers/index.js'
 
 export class CreateUserController {
     constructor(createUserCase) {

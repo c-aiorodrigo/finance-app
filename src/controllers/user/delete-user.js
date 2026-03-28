@@ -1,31 +1,32 @@
 import {
+    checkIfIdIsValid,
     internalServerError,
+    invalidIdResponse,
     notFound,
     ok,
-    checkIfIdIsValid,
-    invalidIdResponse,
-} from './helpers/index.js'
+} from '../helpers/index.js'
 
-export class GetUserByIdController {
-    constructor(getUserByIdUseCase) {
-        this.getUserByIdUseCase = getUserByIdUseCase
+export class DeleteUserController {
+    constructor(deleteUserUseCase) {
+        this.deleteUserUseCase = deleteUserUseCase
     }
     async execute(httpReq) {
         try {
             const userId = httpReq.params.id
 
             const isIdValid = checkIfIdIsValid(userId)
+
             if (!isIdValid) {
                 return invalidIdResponse()
             }
 
-            const user = await this.getUserByIdUseCase.execute(userId)
+            const deletedUser = await this.deleteUserUseCase.execute(userId)
 
-            if (!user) {
+            if (!deletedUser) {
                 return notFound({ message: 'User not found' })
             }
 
-            return ok(user)
+            return ok(deletedUser)
         } catch (error) {
             console.error(error)
             return internalServerError()
