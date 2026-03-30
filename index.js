@@ -6,13 +6,18 @@ import {
     makeUpdateUserController,
     makeCreateUserController,
 } from './src/factories/controllers/user.js'
+import { makeCreateTransactionController } from './src/factories/controllers/transaction.js'
 
 const app = express()
 app.use(express.json())
 
 //USER ROUTES//
+const getUserByIdController = makeGetUserByIdController()
+const createUserController = makeCreateUserController()
+const updateUserController = makeUpdateUserController()
+const deleteUserController = makeDeleteController()
+
 app.get('/api/users/:id', async (request, response) => {
-    const getUserByIdController = makeGetUserByIdController()
     const getUserByIdResponse = await getUserByIdController.execute(request)
 
     response
@@ -20,23 +25,31 @@ app.get('/api/users/:id', async (request, response) => {
         .json(getUserByIdResponse.body)
 })
 app.post('/api/users', async (request, response) => {
-    const createUserController = makeCreateUserController()
     const createUserResponse = await createUserController.execute(request)
 
     //createUserResponse = {statusCode, body}
     response.status(createUserResponse.statusCode).json(createUserResponse.body)
 })
 app.patch('/api/users/:id', async (request, response) => {
-    const updateUserController = makeUpdateUserController()
     const updateUserResponse = await updateUserController.execute(request)
 
     response.status(updateUserResponse.statusCode).json(updateUserResponse.body)
 })
 app.delete('/api/users/:id', async (request, response) => {
-    const deleteUserController = makeDeleteController()
     const deleteUserResponse = await deleteUserController.execute(request)
 
     response.status(deleteUserResponse.statusCode).json(deleteUserResponse.body)
+})
+
+//TRANSACTION ROUTE//
+const createTransactionController = makeCreateTransactionController()
+app.post('/api/transactions', async (request, response) => {
+    const createTransactionResponse =
+        await createTransactionController.execute(request)
+
+    response
+        .status(createTransactionResponse.statusCode)
+        .json(createTransactionResponse.body)
 })
 
 //LISTEN//
