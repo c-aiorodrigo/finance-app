@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import bcrypt from 'bcrypt'
+import { EmailAlreadyInUse } from '../../error/user'
 export class CreateUserUseCase {
     constructor(getUserByEmailRepository, createUserRepository) {
         this.getUserByEmailRepository = getUserByEmailRepository
@@ -11,7 +12,7 @@ export class CreateUserUseCase {
         )
 
         if (emailAlreadyExist) {
-            throw new Error('The email already exists')
+            throw new EmailAlreadyInUse(createUserParams.email)
         }
 
         //gerar ID
