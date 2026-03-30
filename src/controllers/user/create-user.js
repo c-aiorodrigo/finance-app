@@ -9,8 +9,8 @@ import {
 } from '../helpers/index.js'
 
 export class CreateUserController {
-    constructor(createUserCase) {
-        this.createUserCase = createUserCase
+    constructor(createUserUseCase) {
+        this.createUserUseCase = createUserUseCase
     }
     async execute(httpReq) {
         try {
@@ -40,7 +40,7 @@ export class CreateUserController {
                 }
 
                 //Chamando Use Case
-                const createdUser = await this.createUserCase.execute(params)
+                const createdUser = await this.createUserUseCase.execute(params)
                 return created(createdUser)
             }
             //Retornando resposta para o usúario
