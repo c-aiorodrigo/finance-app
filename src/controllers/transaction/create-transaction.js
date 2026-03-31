@@ -6,6 +6,7 @@ import {
     invalidIdResponse,
     created,
     validateRequiredFields,
+    requiredFieldsIsMissingResponse,
 } from '../helpers/index.js'
 
 export class CreateTransactionController {
@@ -19,14 +20,10 @@ export class CreateTransactionController {
 
             const requiredFields = ['userId', 'name', 'date', 'amount', 'type']
 
-            const requiredFieldsValidation = validateRequiredFields(
-                params,
-                requiredFields,
-            )
-            if (!requiredFieldsValidation.ok) {
-                return badRequest({
-                    message: `The field ${requiredFieldsValidation.missing} can not be empty`,
-                })
+            const { ok: requiredFieldsIsOk, missing: missingFields } =
+                validateRequiredFields(params, requiredFields)
+            if (!requiredFieldsIsOk) {
+                return requiredFieldsIsMissingResponse(missingFields)
             }
 
             //validando user id

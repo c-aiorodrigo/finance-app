@@ -1,5 +1,4 @@
 import {
-    badRequest,
     created,
     internalServerError,
     checkIfEmailIsValid,
@@ -7,6 +6,7 @@ import {
     invalidEmailResponse,
     invalidPasswordResponse,
     validateRequiredFields,
+    requiredFieldsIsMissingResponse,
 } from '../helpers/index.js'
 
 export class CreateUserController {
@@ -16,27 +16,26 @@ export class CreateUserController {
     async execute(httpReq) {
         try {
             const params = httpReq.body
-            //validar campos obrigatórios, email e tamanho de senha
             const requiredFields = [
                 'first_name',
                 'last_name',
                 'email',
                 'password',
             ]
+
             //Validação de campos obrigatorios
-            const requiredFieldsValidation = validateRequiredFields(
-                params,
-                requiredFields,
-            )
-            if (!requiredFieldsValidation.ok) {
-                return badRequest({
-                    message: `The field ${requiredFieldsValidation.missing} can not be empty`,
-                })
+            const { ok: requiredFieldsIsOk, missing: missingFields } =
+                validateRequiredFields(params, requiredFields)
+            if (!requiredFieldsIsOk) {
+                return requiredFieldsIsMissingResponse(missingFields)
             }
+
+            //Validação de Senha
             if (!checkIfPasswordIsValid(params.password)) {
                 return invalidPasswordResponse()
             }
 
+            //Validação de Email
             const emailIsValid = checkIfEmailIsValid(params.email)
             if (!emailIsValid) {
                 return invalidEmailResponse()
