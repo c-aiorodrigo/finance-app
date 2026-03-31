@@ -45,7 +45,7 @@ export class CreateTransactionController {
             }
 
             //validando type
-            const isTypeValid = checkIfTypeIsValid(type)
+            const isTypeValid = checkIfTypeIsValid(params.type)
 
             if (!isTypeValid) {
                 return invalidTypeResponse()

@@ -1,5 +1,5 @@
 import validator from 'validator'
-import { badRequest } from './http'
+import { badRequest } from './http.js'
 
 //MONTANTE//
 export const checkIfAmountIsValid = (amount) =>
@@ -21,7 +21,7 @@ export const checkIfTypeIsValid = (type) => {
         return false
     }
     return ['EARNING', 'EXPENSE', 'INVESTMENT'].includes(
-        type.trim().toUpperCase,
+        type.trim().toUpperCase(),
     )
 }
 
