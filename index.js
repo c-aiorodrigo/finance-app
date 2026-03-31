@@ -6,7 +6,10 @@ import {
     makeUpdateUserController,
     makeCreateUserController,
 } from './src/factories/controllers/user.js'
-import { makeCreateTransactionController } from './src/factories/controllers/transaction.js'
+import {
+    makeCreateTransactionController,
+    makeGetTransactionsByUserIdController,
+} from './src/factories/controllers/transaction.js'
 
 const app = express()
 app.use(express.json())
@@ -43,6 +46,9 @@ app.delete('/api/users/:id', async (request, response) => {
 
 //TRANSACTION ROUTE//
 const createTransactionController = makeCreateTransactionController()
+const getTransactionsByUserIdController =
+    makeGetTransactionsByUserIdController()
+
 app.post('/api/transactions', async (request, response) => {
     const createTransactionResponse =
         await createTransactionController.execute(request)
@@ -50,6 +56,15 @@ app.post('/api/transactions', async (request, response) => {
     response
         .status(createTransactionResponse.statusCode)
         .json(createTransactionResponse.body)
+})
+
+app.get('/api/transactions', async (request, response) => {
+    const getTransactionsByUserIdResponse =
+        await getTransactionsByUserIdController.execute(request)
+
+    response
+        .status(getTransactionsByUserIdResponse.statusCode)
+        .json(getTransactionsByUserIdResponse.body)
 })
 
 //LISTEN//

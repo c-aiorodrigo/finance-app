@@ -7,9 +7,9 @@ import {
     userNotFoundResponse,
 } from '../helpers/index.js'
 
-export class GetTransactionByUserIdController {
-    constructor(getTransactionByUserIdUserCase) {
-        this.getTransactionByUserIdUserCase = getTransactionByUserIdUserCase
+export class GetTransactionsByUserIdController {
+    constructor(getTransactionsByUserIdUserCase) {
+        this.getTransactionsByUserIdUserCase = getTransactionsByUserIdUserCase
     }
 
     async execute(httpReq) {
@@ -26,7 +26,7 @@ export class GetTransactionByUserIdController {
             }
 
             const userTransactions =
-                await this.getTransactionByUserIdUserCase.execute(userId)
+                await this.getTransactionsByUserIdUserCase.execute({ userId })
 
             if (!userTransactions) {
                 return userNotFoundResponse()
