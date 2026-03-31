@@ -1,12 +1,14 @@
-import validator from 'validator'
 import {
-    badRequest,
     checkIfIdIsValid,
     internalServerError,
     invalidIdResponse,
     created,
     validateRequiredFields,
     requiredFieldsIsMissingResponse,
+    checkIfAmountIsValid,
+    checkIfTypeIsValid,
+    invalidAmountResponse,
+    invalidTypeResponse,
 } from '../helpers/index.js'
 
 export class CreateTransactionController {
@@ -20,6 +22,7 @@ export class CreateTransactionController {
 
             const requiredFields = ['userId', 'name', 'date', 'amount', 'type']
 
+            //Validando o campos obrigatorios
             const { ok: requiredFieldsIsOk, missing: missingFields } =
                 validateRequiredFields(params, requiredFields)
             if (!requiredFieldsIsOk) {
@@ -28,45 +31,27 @@ export class CreateTransactionController {
 
             //validando user id
             const userId = params.userId
-
             const isIdValid = checkIfIdIsValid(userId)
+
             if (!isIdValid) {
                 return invalidIdResponse()
             }
 
-            if (params.amount <= 0) {
-                return badRequest({
-                    message: 'The amount must be greater then 0',
-                })
-            }
-
             //validando montante
-            const isAmountValid = validator.isCurrency(
-                params.amount.toString(),
-                {
-                    digits_after_decimal: [1, 2],
-                    require_decimal: true,
-                    decimal_separator: '.',
-                },
-            )
+            const isAmountValid = checkIfAmountIsValid(params.amount)
 
             if (!isAmountValid) {
-                return badRequest({
-                    message: 'The amount must be a valid currency! ',
-                })
+                return invalidAmountResponse()
             }
 
             //validando type
-            const type = params.type.trim().toUpperCase()
-            const isTypeValid = ['EARNING', 'EXPENSE', 'INVESTMENT'].includes(
-                type,
-            )
+            const isTypeValid = checkIfTypeIsValid(type)
+
             if (!isTypeValid) {
-                return badRequest({
-                    message: 'The type must be EARNING, EXPENSE or INVESTMENT',
-                })
+                return invalidTypeResponse()
             }
 
+            const type = params.type.trim().toUpperCase()
             const transaction = await this.createTransactionUseCase.execute({
                 ...params,
                 type,
