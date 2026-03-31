@@ -1,3 +1,5 @@
+import { UserNotFoundError } from '../../error/user.js'
+
 export class GetUserByIdUseCase {
     constructor(getUserByIdRepository) {
         this.getUserByIdRepository = getUserByIdRepository
@@ -6,7 +8,7 @@ export class GetUserByIdUseCase {
         const user = await this.getUserByIdRepository.execute(userId)
 
         if (!user) {
-            return null
+            throw new UserNotFoundError(userId)
         }
         // eslint-disable-next-line no-unused-vars
         const { password, ...userWithoutPassword } = user
