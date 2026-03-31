@@ -5,6 +5,7 @@ import {
     internalServerError,
     invalidIdResponse,
     created,
+    validateRequiredFields,
 } from '../helpers/index.js'
 
 export class CreateTransactionController {
@@ -18,21 +19,14 @@ export class CreateTransactionController {
 
             const requiredFields = ['userId', 'name', 'date', 'amount', 'type']
 
-            for (const field of requiredFields) {
-                if (params[field] === undefined || params[field] === null) {
-                    return badRequest({
-                        message: 'The fields can not be empty!',
-                    })
-                }
-
-                if (
-                    typeof params[field] === 'string' &&
-                    params[field].trim().length === 0
-                ) {
-                    return badRequest({
-                        message: 'The fields can not be empty!',
-                    })
-                }
+            const requiredFieldsValidation = validateRequiredFields(
+                params,
+                requiredFields,
+            )
+            if (!requiredFieldsValidation.ok) {
+                return badRequest({
+                    message: `The field ${requiredFieldsValidation.missing} can not be empty`,
+                })
             }
 
             //validando user id
