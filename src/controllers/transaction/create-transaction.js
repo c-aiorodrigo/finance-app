@@ -53,7 +53,7 @@ export class CreateTransactionController {
             const isAmountValid = validator.isCurrency(
                 params.amount.toString(),
                 {
-                    digits_after_decimal: [2],
+                    digits_after_decimal: [1, 2],
                     require_decimal: true,
                     decimal_separator: '.',
                 },
