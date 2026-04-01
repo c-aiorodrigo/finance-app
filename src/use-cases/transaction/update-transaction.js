@@ -1,7 +1,7 @@
 import {
     checkIfAmountIsValid,
     checkIfTypeIsValid,
-} from '../../controllers/helpers/transaction.js'
+} from '../../controllers/helpers/index.js'
 import {
     TransactionNotFoundError,
     UserNotFoundError,

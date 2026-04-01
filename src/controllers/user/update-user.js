@@ -47,7 +47,6 @@ export class UpdateUserController {
                 params,
                 allowedFields,
             )
-
             if (someFieldIsNotAllowed) {
                 return someFieldIsNotAllowedResponse()
             }
