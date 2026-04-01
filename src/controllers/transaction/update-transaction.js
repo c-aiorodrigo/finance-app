@@ -10,6 +10,7 @@ import {
     invalidIdResponse,
     invalidTransactionIdResponse,
     someFieldIsBlankResponse,
+    someFieldIsNotAllowedResponse,
 } from '../helpers/index.js'
 
 export class UpdateTransactionController {
@@ -46,7 +47,7 @@ export class UpdateTransactionController {
                 allowedFields,
             )
             if (someFieldIsNotAllowed) {
-                return checkIfSomeFieldIsNotAllowed()
+                return someFieldIsNotAllowedResponse()
             }
 
             const someFieldIsBlank = checkIfSomeFieldIsBlanck(
@@ -55,7 +56,8 @@ export class UpdateTransactionController {
             if (someFieldIsBlank) {
                 return someFieldIsBlankResponse()
             }
-            const updateParams = { ...updateTransactionParams, userId }
+            const updateParams = { ...updateTransactionParams, userId, id }
+
             const updatedTransaction =
                 await this.updateTransactionUseCase.execute(updateParams)
 

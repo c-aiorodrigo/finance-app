@@ -20,12 +20,10 @@ export class UpdateTransactionUseCase {
 
     async execute(updateTransactionParams) {
         //Verificar se o User Id existe
-
         const userId = updateTransactionParams.userId
         const user = await this.getUserByIdRepository.execute(
             updateTransactionParams.userId,
         )
-
         if (!user) {
             throw new UserNotFoundError(userId)
         }
@@ -39,13 +37,11 @@ export class UpdateTransactionUseCase {
             throw new TransactionNotFoundError()
         }
 
-        if (transactionId.id !== updateTransactionParams.userId) {
+        if (transactionId.user_id !== updateTransactionParams.userId) {
             throw new Error('User not authorized to update this transaction.')
-            // Dica: No futuro, crie um erro customizado UnauthorizedError
         }
 
-        //Se for o tipo de transação verificar se está dentro dos padrões
-
+        //Se for o 'tipo de transação' verificar se está dentro dos padrões
         if (updateTransactionParams.type) {
             const isThisTypeValid = checkIfTypeIsValid(
                 updateTransactionParams.type,
@@ -54,6 +50,10 @@ export class UpdateTransactionUseCase {
             if (!isThisTypeValid) {
                 throw new Error('The type is not valid')
             }
+
+            updateTransactionParams.type = updateTransactionParams.type
+                .trim()
+                .toUpperCase()
         }
 
         //Se for montante, verificar se é valido
@@ -66,5 +66,15 @@ export class UpdateTransactionUseCase {
                 throw new Error('The amount is not valid!')
             }
         }
+
+        delete updateTransactionParams.id
+        delete updateTransactionParams.userId
+
+        const updatedTransactionsParams =
+            await this.updateTransactionRepository.execute(
+                id,
+                updateTransactionParams,
+            )
+        return updatedTransactionsParams
     }
 }

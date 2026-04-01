@@ -1,7 +1,7 @@
 import { PostgresHelper } from '../../../db/postgres/helper.js'
 
 export class PostgresUpdateTransactionRepository {
-    async execute(id, updateTransactionParams, userId) {
+    async execute(id, updateTransactionParams) {
         const updateFields = []
         const updateValues = []
 
@@ -11,20 +11,18 @@ export class PostgresUpdateTransactionRepository {
         })
 
         updateValues.push(id)
-        const transationsId = updateValues.length
-
-        // 3. Adiciona o ID do usuário na lista de valores
-        updateValues.push(userId)
-        const idUser = updateValues.length
+        const transactionId = updateValues.length
 
         const updateQuery = `
-        UPDATE transations
+        UPDATE transactions
         SET ${updateFields.join(', ')}
-        WHERE id = $${transationsId} AND user_id = $${idUser}
+        WHERE id = $${transactionId}
         RETURNING *
         `
-
-        const updateTransaction = await PostgresHelper.query.apply(
+        console.log('=== DEBUG DO REPOSITORY ===')
+        console.log('SQL Montado:', updateQuery)
+        console.log('Valores do Array:', updateValues)
+        const updateTransaction = await PostgresHelper.query(
             updateQuery,
             updateValues,
         )
