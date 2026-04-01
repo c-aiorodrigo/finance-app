@@ -1,5 +1,4 @@
 import {
-    badRequest,
     internalServerError,
     ok,
     checkIfEmailIsValid,
@@ -8,6 +7,12 @@ import {
     invalidEmailResponse,
     invalidIdResponse,
     invalidPasswordResponse,
+    bodyIsEmptyResponse,
+    checkIfTheBodyIsEmpty,
+    checkIfSomeFieldIsNotAllowed,
+    someFieldIsNotAllowedResponse,
+    checkIfSomeFieldIsBlanck,
+    someFieldIsBlankResponse,
 } from '../helpers/index.js'
 
 export class UpdateUserController {
@@ -25,12 +30,10 @@ export class UpdateUserController {
 
             const params = httpReq.body
 
-            const isBodyEmpty = Object.keys(params).length === 0
+            const isBodyEmpty = checkIfTheBodyIsEmpty(params)
 
             if (isBodyEmpty) {
-                return badRequest({
-                    message: 'All fields are empty!',
-                })
+                return bodyIsEmptyResponse()
             }
 
             const allowedFields = [
@@ -40,24 +43,18 @@ export class UpdateUserController {
                 'password',
             ]
 
-            const someFieldIsNotAllowes = Object.keys(params).some(
-                (field) => !allowedFields.includes(field),
+            const someFieldIsNotAllowed = checkIfSomeFieldIsNotAllowed(
+                params,
+                allowedFields,
             )
 
-            if (someFieldIsNotAllowes) {
-                return badRequest({
-                    message: 'Some field provide is not allowed',
-                })
+            if (someFieldIsNotAllowed) {
+                return someFieldIsNotAllowedResponse()
             }
 
-            const someFieldIsBlank = Object.keys(params).some(
-                (field) =>
-                    typeof params[field] === 'string' &&
-                    params[field].trim().length === 0,
-            )
-
+            const someFieldIsBlank = checkIfSomeFieldIsBlanck(params)
             if (someFieldIsBlank) {
-                return badRequest({ message: 'Some provided field is blank' })
+                return someFieldIsBlankResponse()
             }
 
             if (params.password) {
