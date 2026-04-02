@@ -1,4 +1,7 @@
-import { TransactionNotFoundError, UserNotFoundError } from '../../error'
+import {
+    TransactionNotFoundError,
+    UserNotFoundError,
+} from '../../error/index.js'
 
 export class DeleteTransactionUseCase {
     constructor(
@@ -29,6 +32,10 @@ export class DeleteTransactionUseCase {
 
         const deletedTransaction =
             await this.deleteTransactionRepository.execute(transactionId)
+
+        if (!deletedTransaction) {
+            return null
+        }
 
         return deletedTransaction
     }
