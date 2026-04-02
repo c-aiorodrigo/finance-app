@@ -1,5 +1,6 @@
 import {
     CreateTransactionController,
+    DeleteTransactionController,
     GetTransactionsByUserIdController,
 } from '../../controllers/index.js'
 import { UpdateTransactionController } from '../../controllers/transaction/update-transaction.js'
@@ -82,7 +83,7 @@ export const makeDeleteTransactionController = () => {
         deleteTransactionRepository,
     )
 
-    const deleteTransactionController = new deleteTransactionController(
+    const deleteTransactionController = new DeleteTransactionController(
         deleteTransctionUseCase,
     )
 

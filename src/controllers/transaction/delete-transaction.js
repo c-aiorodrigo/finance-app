@@ -8,7 +8,7 @@ import {
     ok,
 } from '../helpers/index.js'
 
-export class DeleteTranscactionController {
+export class DeleteTransactionController {
     constructor(deleteTransactionUseCase) {
         this.deleteTransactionUseCase = deleteTransactionUseCase
     }
