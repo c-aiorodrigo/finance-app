@@ -1,17 +1,16 @@
+import { updateTransactionSchema } from '../../../schemas/index.js'
 import {
     ok,
     bodyIsEmptyResponse,
     checkIfIdIsValid,
-    checkIfSomeFieldIsBlanck,
-    checkIfSomeFieldIsNotAllowed,
     checkIfTheBodyIsEmpty,
     checkIfTransactionIdIsValid,
     internalServerError,
     invalidIdResponse,
     invalidTransactionIdResponse,
-    someFieldIsBlankResponse,
-    someFieldIsNotAllowedResponse,
+    badRequest,
 } from '../helpers/index.js'
+import { ZodError } from 'zod'
 
 export class UpdateTransactionController {
     constructor(updateTransactionUseCase) {
@@ -40,29 +39,24 @@ export class UpdateTransactionController {
                 return bodyIsEmptyResponse()
             }
 
-            const allowedFields = ['name', 'date', 'amount', 'type']
-
-            const someFieldIsNotAllowed = checkIfSomeFieldIsNotAllowed(
-                updateTransactionParams,
-                allowedFields,
-            )
-            if (someFieldIsNotAllowed) {
-                return someFieldIsNotAllowedResponse()
+            const validateUpdateTransactionParams =
+                await updateTransactionSchema.parseAsync(
+                    updateTransactionParams,
+                )
+            const updateParams = {
+                ...validateUpdateTransactionParams.data,
+                userId,
+                id,
             }
-
-            const someFieldIsBlank = checkIfSomeFieldIsBlanck(
-                updateTransactionParams,
-            )
-            if (someFieldIsBlank) {
-                return someFieldIsBlankResponse()
-            }
-            const updateParams = { ...updateTransactionParams, userId, id }
 
             const updatedTransaction =
                 await this.updateTransactionUseCase.execute(updateParams)
 
             return ok(updatedTransaction)
         } catch (error) {
+            if (error instanceof ZodError) {
+                return badRequest({ message: error.issues[0].message })
+            }
             console.error(error)
             return internalServerError()
         }

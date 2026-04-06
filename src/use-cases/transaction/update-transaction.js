@@ -1,8 +1,4 @@
 import {
-    checkIfAmountIsValid,
-    checkIfTypeIsValid,
-} from '../../controllers/helpers/index.js'
-import {
     TransactionNotFoundError,
     UserNotFoundError,
 } from '../../error/index.js'
@@ -18,18 +14,16 @@ export class UpdateTransactionUseCase {
         this.updateTransactionRepository = updateTransactionRepository
     }
 
-    async execute(updateTransactionParams) {
+    async execute(params) {
         //Verificar se o User Id existe
-        const userId = updateTransactionParams.userId
-        const user = await this.getUserByIdRepository.execute(
-            updateTransactionParams.userId,
-        )
+        const userId = params.userId
+        const user = await this.getUserByIdRepository.execute(params.userId)
         if (!user) {
             throw new UserNotFoundError(userId)
         }
 
         //Verificar se o id da transação existe
-        const id = updateTransactionParams.id
+        const id = params.id
         const transactionId =
             await this.getTransactionByIdRepository.execute(id)
 
@@ -37,43 +31,18 @@ export class UpdateTransactionUseCase {
             throw new TransactionNotFoundError()
         }
 
-        if (transactionId.user_id !== updateTransactionParams.userId) {
+        if (transactionId.user_id !== params.userId) {
             throw new Error('User not authorized to update this transaction.')
         }
 
-        //Se for o 'tipo de transação' verificar se está dentro dos padrões
-        if (updateTransactionParams.type) {
-            const isThisTypeValid = checkIfTypeIsValid(
-                updateTransactionParams.type,
-            )
-
-            if (!isThisTypeValid) {
-                throw new Error('The type is not valid')
-            }
-
-            updateTransactionParams.type = updateTransactionParams.type
-                .trim()
-                .toUpperCase()
-        }
-
-        //Se for montante, verificar se é valido
-
-        if (updateTransactionParams.amount) {
-            const isThisAmountValid = checkIfAmountIsValid(
-                updateTransactionParams.amount,
-            )
-            if (!isThisAmountValid) {
-                throw new Error('The amount is not valid!')
-            }
-        }
-
-        delete updateTransactionParams.id
-        delete updateTransactionParams.userId
+        const transactionToUpdate = { ...params }
+        delete transactionToUpdate.id
+        delete transactionToUpdate.userId
 
         const updatedTransactionsParams =
             await this.updateTransactionRepository.execute(
                 id,
-                updateTransactionParams,
+                transactionToUpdate,
             )
         return updatedTransactionsParams
     }
