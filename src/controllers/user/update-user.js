@@ -1,18 +1,13 @@
+import { ZodError } from 'zod'
+import { updateUserSchema } from '../../../schemas/users.js'
 import {
     internalServerError,
     ok,
-    checkIfEmailIsValid,
     checkIfIdIsValid,
-    checkIfPasswordIsValid,
-    invalidEmailResponse,
     invalidIdResponse,
-    invalidPasswordResponse,
     bodyIsEmptyResponse,
     checkIfTheBodyIsEmpty,
-    checkIfSomeFieldIsNotAllowed,
-    someFieldIsNotAllowedResponse,
-    checkIfSomeFieldIsBlanck,
-    someFieldIsBlankResponse,
+    badRequest,
 } from '../helpers/index.js'
 
 export class UpdateUserController {
@@ -36,46 +31,20 @@ export class UpdateUserController {
                 return bodyIsEmptyResponse()
             }
 
-            const allowedFields = [
-                'first_name',
-                'last_name',
-                'email',
-                'password',
-            ]
-
-            const someFieldIsNotAllowed = checkIfSomeFieldIsNotAllowed(
-                params,
-                allowedFields,
-            )
-            if (someFieldIsNotAllowed) {
-                return someFieldIsNotAllowedResponse()
-            }
-
-            const someFieldIsBlank = checkIfSomeFieldIsBlanck(params)
-            if (someFieldIsBlank) {
-                return someFieldIsBlankResponse()
-            }
-
-            if (params.password) {
-                if (!checkIfPasswordIsValid(params.password)) {
-                    return invalidPasswordResponse()
-                }
-            }
-
-            if (params.email) {
-                const emailIsValid = checkIfEmailIsValid(params.email)
-                if (!emailIsValid) {
-                    return invalidEmailResponse()
-                }
-            }
+            const validadeFields = await updateUserSchema.parseAsync(params)
 
             const updateUser = await this.updateUserUseCase.execute(
                 userId,
-                params,
+                validadeFields,
             )
 
             return ok(updateUser)
         } catch (error) {
+            if (error instanceof ZodError) {
+                return badRequest({
+                    message: error.issues[0].message,
+                })
+            }
             console.error(error)
             return internalServerError()
         }
