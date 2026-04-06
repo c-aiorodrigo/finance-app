@@ -7,7 +7,7 @@ export class GetUserBalanceUseCase {
     }
 
     async execute(userId) {
-        const user = await this.getUserbyIdRepository.execute(userId)
+        const user = await this.getUserByIdRepository.execute(userId)
 
         if (!user) {
             throw new UserNotFoundError(userId)

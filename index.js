@@ -5,6 +5,7 @@ import {
     makeGetUserByIdController,
     makeUpdateUserController,
     makeCreateUserController,
+    makeGetUserBalanceController,
 } from './src/factories/controllers/user.js'
 import {
     makeCreateTransactionController,
@@ -21,6 +22,7 @@ const getUserByIdController = makeGetUserByIdController()
 const createUserController = makeCreateUserController()
 const updateUserController = makeUpdateUserController()
 const deleteUserController = makeDeleteController()
+const getUserBalanceController = makeGetUserBalanceController()
 
 app.get('/api/users/:id', async (request, response) => {
     const getUserByIdResponse = await getUserByIdController.execute(request)
@@ -28,6 +30,14 @@ app.get('/api/users/:id', async (request, response) => {
     response
         .status(getUserByIdResponse.statusCode)
         .json(getUserByIdResponse.body)
+})
+app.get('/api/users/:userId/balance', async (request, response) => {
+    const getUserBalanceResponse =
+        await getUserBalanceController.execute(request)
+
+    response
+        .status(getUserBalanceResponse.statusCode)
+        .json(getUserBalanceResponse.body)
 })
 app.post('/api/users', async (request, response) => {
     const createUserResponse = await createUserController.execute(request)
