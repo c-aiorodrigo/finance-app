@@ -32,7 +32,7 @@ export class DeleteTransactionController {
                 await this.deleteTransactionUseCase.execute(id, userId)
 
             if (!deletedTransaction) {
-                return notFound({ message: 'Transction not found' })
+                return notFound({ message: 'Transaction not found' })
             }
 
             return ok(deletedTransaction)
