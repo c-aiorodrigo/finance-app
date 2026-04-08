@@ -31,7 +31,14 @@ export class UpdateUserController {
                 return bodyIsEmptyResponse()
             }
 
-            const validadeFields = await updateUserSchema.parseAsync(params)
+            const paramsToUpdate = {
+                ...(params.first_name && { firstName: params.first_name }),
+                ...(params.last_name && { lastName: params.last_name }),
+                ...(params.email && { email: params.email }),
+                ...(params.password && { password: params.password }),
+            }
+            const validadeFields =
+                await updateUserSchema.parseAsync(paramsToUpdate)
 
             const updateUser = await this.updateUserUseCase.execute(
                 userId,

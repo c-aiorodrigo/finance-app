@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import bcrypt from 'bcrypt'
 import { EmailAlreadyInUse } from '../../error/user.js'
 export class CreateUserUseCase {
@@ -15,18 +14,14 @@ export class CreateUserUseCase {
             throw new EmailAlreadyInUse(createUserParams.email)
         }
 
-        //gerar ID
-        const userId = uuidv4()
-
         //criptografar senha
         const hashedPassword = await bcrypt.hash(createUserParams.password, 10)
 
         //inserir o usuário no banco de dados
         const user = {
-            id: userId,
             password: hashedPassword,
-            first_name: createUserParams.first_name,
-            last_name: createUserParams.last_name,
+            firstName: createUserParams.firstName,
+            lastName: createUserParams.lastName,
             email: createUserParams.email,
         }
 

@@ -4,8 +4,7 @@ export class PostgresCreateTransactionRepository {
     async execute(createTransactionParams) {
         const results = await prisma.transaction.create({
             data: {
-                id: createTransactionParams.id,
-                user_id: createTransactionParams.userId,
+                userId: createTransactionParams.userId,
                 name: createTransactionParams.name,
                 date: createTransactionParams.date,
                 amount: createTransactionParams.amount,

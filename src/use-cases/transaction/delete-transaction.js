@@ -26,7 +26,7 @@ export class DeleteTransactionUseCase {
             throw new TransactionNotFoundError()
         }
 
-        if (transaction.user_id !== userId) {
+        if (transaction.userId !== userId) {
             throw new Error('User not authorized to update this transaction.')
         }
 

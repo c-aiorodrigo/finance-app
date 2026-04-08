@@ -14,7 +14,7 @@ export class UpdateTransactionUseCase {
         this.updateTransactionRepository = updateTransactionRepository
     }
 
-    async execute(params) {
+    async execute(transactionId, params) {
         //Verificar se o User Id existe
         const userId = params.userId
         const user = await this.getUserByIdRepository.execute(params.userId)
@@ -23,15 +23,14 @@ export class UpdateTransactionUseCase {
         }
 
         //Verificar se o id da transação existe
-        const id = params.id
-        const transactionId =
-            await this.getTransactionByIdRepository.execute(id)
+        const id = transactionId
+        const transaction = await this.getTransactionByIdRepository.execute(id)
 
-        if (!transactionId) {
+        if (!transaction) {
             throw new TransactionNotFoundError()
         }
 
-        if (transactionId.user_id !== params.userId) {
+        if (transaction.userId !== params.userId) {
             throw new Error('User not authorized to update this transaction.')
         }
 

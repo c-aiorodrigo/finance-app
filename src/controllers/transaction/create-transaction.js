@@ -9,9 +9,15 @@ export class CreateTransactionController {
 
     async execute(httpReq) {
         try {
-            const params = httpReq.body
+            const { user_id, userId, name, date, amount, type } = httpReq.body
 
-            const validateFields = createTransactionSchema.parse(params)
+            const validateFields = createTransactionSchema.parse({
+                userId: userId || user_id,
+                name,
+                date,
+                amount,
+                type,
+            })
 
             const transaction =
                 await this.createTransactionUseCase.execute(validateFields)

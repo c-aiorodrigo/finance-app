@@ -31,7 +31,6 @@ export class GetUserBalanceController {
             if (!userBalance) {
                 return userNotFoundResponse()
             }
-
             return ok(userBalance)
         } catch (error) {
             if (error instanceof UserNotFoundError) {

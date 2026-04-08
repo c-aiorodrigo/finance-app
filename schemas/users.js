@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 export const createUserSchema = z.object({
-    first_name: z.string({ message: 'First name is required' }).trim().min(1, {
+    firstName: z.string({ message: 'First name is required' }).trim().min(1, {
         message: 'First name is required',
     }),
-    last_name: z.string({ message: 'Last name is required' }).trim().min(1, {
+    lastName: z.string({ message: 'Last name is required' }).trim().min(1, {
         message: 'Last name is required',
     }),
     email: z

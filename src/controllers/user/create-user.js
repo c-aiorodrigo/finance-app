@@ -1,6 +1,7 @@
 import { badRequest, created, internalServerError } from '../helpers/index.js'
 import { ZodError } from 'zod'
 import { createUserSchema } from '../../../schemas/index.js'
+import { EmailAlreadyInUse } from '../../error/index.js'
 
 export class CreateUserController {
     constructor(createUserUseCase) {
@@ -8,9 +9,14 @@ export class CreateUserController {
     }
     async execute(httpReq) {
         try {
-            const params = httpReq.body
+            const { first_name, last_name, email, password } = httpReq.body
 
-            const validatedParams = await createUserSchema.parseAsync(params)
+            const validatedParams = await createUserSchema.parseAsync({
+                firstName: first_name,
+                lastName: last_name,
+                email,
+                password,
+            })
 
             //Chamando Use Case
             const createdUser =
@@ -22,6 +28,12 @@ export class CreateUserController {
             if (error instanceof ZodError) {
                 return badRequest({
                     message: error.issues[0].message,
+                })
+            }
+
+            if (error instanceof EmailAlreadyInUse) {
+                return badRequest({
+                    message: error.message,
                 })
             }
             console.error(error)
