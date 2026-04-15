@@ -2,32 +2,37 @@ import { EmailAlreadyInUse } from '../../error/user.js'
 import { CreateUserController } from '../index.js'
 import { faker } from '@faker-js/faker'
 
+const makeSut = () => {
+    const createUserUseCaseMock = {
+        execute: jest.fn(),
+    }
+
+    const sut = new CreateUserController(createUserUseCaseMock)
+
+    return { sut, createUserUseCaseMock }
+}
+
+const makeFakeRequest = () => ({
+    body: {
+        first_name: faker.person.firstName(),
+        last_name: faker.person.lastName(),
+        email: faker.internet.email(),
+        password: 'SenhaSuperForte123!', // Chumbado para evitar testes Flaky com o Zod
+    },
+})
+
 describe('Create User Controller', () => {
-    it('should create an user', async () => {
+    it('should create a user', async () => {
         //ARRANGE
-        const httpReq = {
-            body: {
-                first_name: faker.person.firstName(),
-                last_name: faker.person.lastName(),
-                email: faker.internet.email(),
-                password: faker.internet.password(),
-            },
-        }
+        const { sut, createUserUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
 
-        const createUserUseCaseMock = {
-            execute: jest.fn().mockResolvedValue(httpReq.body),
-        }
-        const createUserController = new CreateUserController(
-            createUserUseCaseMock,
-        )
+        createUserUseCaseMock.execute.mockResolvedValue(httpReq.body)
         //act
-
-        const createdUser = await createUserController.execute(httpReq)
+        const createdUser = await sut.execute(httpReq)
 
         //ASSERT
         expect(createdUser.statusCode).toBe(201)
-        expect(createdUser).not.toBeUndefined()
-        expect(createdUser).not.toBeNull()
 
         expect(createUserUseCaseMock.execute).toHaveBeenCalledTimes(1)
 
@@ -39,31 +44,18 @@ describe('Create User Controller', () => {
         })
     })
 
-    it('Should told me that email aready exist', async () => {
-        //ARRAGE
-        const httpReq = {
-            body: {
-                first_name: faker.person.firstName(),
-                last_name: faker.person.lastName(),
-                email: faker.internet.email(),
-                password: faker.internet.password(),
-            },
-        }
-        const createUserUseCaseMock = {
-            execute: jest
-                .fn()
-                .mockRejectedValue(new EmailAlreadyInUse(httpReq.body.email)),
-        }
-        const createUserController = new CreateUserController(
-            createUserUseCaseMock,
+    it('Should told me that email already exist', async () => {
+        //ARRANGE
+        const { sut, createUserUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
+        createUserUseCaseMock.execute.mockRejectedValue(
+            new EmailAlreadyInUse(httpReq.body.email),
         )
 
         //ACT
-
-        const emailUsed = await createUserController.execute(httpReq)
+        const emailUsed = await sut.execute(httpReq)
 
         //ASSERT
-
         expect(emailUsed.statusCode).toBe(400)
         expect(emailUsed.body).toEqual({
             message: new EmailAlreadyInUse(httpReq.body.email).message,
@@ -73,57 +65,32 @@ describe('Create User Controller', () => {
 
     it('Should tell me that some field is not provide correctly', async () => {
         //ARRANGE
-
-        const httpReq = {
-            body: {
-                first_name: faker.person.firstName(),
-                last_name: faker.person.lastName(),
-                email: 'email_invalid',
-                password: faker.internet.password(),
-            },
-        }
-
-        const createUseUserCaseMock = {
-            execute: jest.fn(),
-        }
-
-        const createUserController = new CreateUserController(
-            createUseUserCaseMock,
-        )
+        const { sut, createUserUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
 
         //ACT
-
-        const response = await createUserController.execute(httpReq)
+        httpReq.body.email = 'email_invalid'
+        const response = await sut.execute(httpReq)
 
         //ASSERT
-
         expect(response.statusCode).toBe(400)
         expect(response.body).toHaveProperty('message')
 
-        expect(createUseUserCaseMock.execute).not.toHaveBeenCalledTimes(1)
+        expect(createUserUseCaseMock.execute).not.toHaveBeenCalled()
     })
 
     it('Should tell me that system is down', async () => {
-        const httpReq = {
-            body: {
-                first_name: faker.person.firstName(),
-                last_name: faker.person.lastName(),
-                email: faker.internet.email(),
-                password: faker.internet.password(),
-            },
-        }
+        //ARRANGE
+        const { sut, createUserUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
 
-        const createUseUserCaseMock = {
-            execute: jest.fn().mockRejectedValue(new Error('DataBase is Down')),
-        }
-
-        const createUserController = new CreateUserController(
-            createUseUserCaseMock,
+        createUserUseCaseMock.execute.mockRejectedValue(
+            new Error('DataBase is Down'),
         )
 
+        jest.spyOn(console, 'error').mockImplementation(() => {})
         //ACT
-
-        const response = await createUserController.execute(httpReq)
+        const response = await sut.execute(httpReq)
 
         //ASSERT
 
