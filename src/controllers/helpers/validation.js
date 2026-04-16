@@ -44,7 +44,8 @@ export const validateRequiredFields = (params, requiredFields) => {
 //SE HÁ CAMPOS PARA ATUALIZAR//
 
 export const checkIfTheBodyIsEmpty = (params) => {
-    Object.keys(params).length === 0
+    if (!params) return true
+    return Object.keys(params).length === 0
 }
 export const bodyIsEmptyResponse = () => {
     return badRequest({
