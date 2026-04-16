@@ -17,12 +17,12 @@ const makeFakeRequest = () => ({
         first_name: faker.person.firstName(),
         last_name: faker.person.lastName(),
         email: faker.internet.email(),
-        password: 'SenhaSuperForte123!', // Chumbado para evitar testes Flaky com o Zod
+        password: 'SenhaSuperForte123!',
     },
 })
 
 describe('Create User Controller', () => {
-    it('should create a user', async () => {
+    it('should create an user', async () => {
         //ARRANGE
         const { sut, createUserUseCaseMock } = makeSut()
         const httpReq = makeFakeRequest()
