@@ -9,6 +9,7 @@ import {
     checkIfTheBodyIsEmpty,
     badRequest,
 } from '../helpers/index.js'
+import { EmailAlreadyInUse } from '../../error/user.js'
 
 export class UpdateUserController {
     constructor(updateUserUseCase) {
@@ -31,18 +32,24 @@ export class UpdateUserController {
                 return bodyIsEmptyResponse()
             }
 
+            const validadeFields = await updateUserSchema.parseAsync(params)
+
             const paramsToUpdate = {
-                ...(params.first_name && { firstName: params.first_name }),
-                ...(params.last_name && { lastName: params.last_name }),
-                ...(params.email && { email: params.email }),
-                ...(params.password && { password: params.password }),
+                ...(validadeFields.first_name && {
+                    firstName: validadeFields.first_name,
+                }),
+                ...(validadeFields.last_name && {
+                    lastName: validadeFields.last_name,
+                }),
+                ...(validadeFields.email && { email: validadeFields.email }),
+                ...(validadeFields.password && {
+                    password: validadeFields.password,
+                }),
             }
-            const validadeFields =
-                await updateUserSchema.parseAsync(paramsToUpdate)
 
             const updateUser = await this.updateUserUseCase.execute(
                 userId,
-                validadeFields,
+                paramsToUpdate,
             )
 
             return ok(updateUser)
@@ -51,6 +58,10 @@ export class UpdateUserController {
                 return badRequest({
                     message: error.issues[0].message,
                 })
+            }
+
+            if (error instanceof EmailAlreadyInUse) {
+                return badRequest({ message: error.message })
             }
             console.error(error)
             return internalServerError()
