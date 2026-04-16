@@ -12,8 +12,8 @@ export class CreateUserController {
             const { first_name, last_name, email, password } = httpReq.body
 
             const validatedParams = await createUserSchema.parseAsync({
-                firstName: first_name,
-                lastName: last_name,
+                first_name,
+                last_name,
                 email,
                 password,
             })

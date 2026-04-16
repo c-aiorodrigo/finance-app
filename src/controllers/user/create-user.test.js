@@ -36,12 +36,7 @@ describe('Create User Controller', () => {
 
         expect(createUserUseCaseMock.execute).toHaveBeenCalledTimes(1)
 
-        expect(createUserUseCaseMock.execute).toHaveBeenCalledWith({
-            firstName: httpReq.body.first_name,
-            lastName: httpReq.body.last_name,
-            email: httpReq.body.email,
-            password: httpReq.body.password,
-        })
+        expect(createUserUseCaseMock.execute).toHaveBeenCalledWith(httpReq.body)
     })
 
     it('Should told me that email already exist', async () => {
