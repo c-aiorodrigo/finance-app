@@ -81,4 +81,19 @@ describe('Create Transaction Controller', () => {
         expect(response.statusCode).toBe(400)
         expect(createTransactionMock.execute).not.toHaveBeenCalled()
     })
+
+    it('should fail if system throws', async () => {
+        const { sut, createTransactionMock } = makeSut()
+        const httpReq = makeFakeRequest()
+
+        createTransactionMock.execute.mockRejectedValue(
+            new Error('System is down'),
+        )
+
+        jest.spyOn(console, 'error').mockImplementation(() => {})
+
+        const response = await sut.execute(httpReq)
+
+        expect(response.statusCode).toBe(500)
+    })
 })
