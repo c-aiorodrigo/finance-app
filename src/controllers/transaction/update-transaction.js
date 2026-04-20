@@ -34,28 +34,15 @@ export class UpdateTransactionController {
 
             const updateTransactionParams = httpReq.body
 
-            const paramsToValidate = {
-                ...(updateTransactionParams.name && {
-                    name: updateTransactionParams.name,
-                }),
-                ...(updateTransactionParams.amount && {
-                    amount: updateTransactionParams.amount,
-                }),
-                ...(updateTransactionParams.type && {
-                    type: updateTransactionParams.type,
-                }),
-                ...(updateTransactionParams.date && {
-                    date: updateTransactionParams.date,
-                }),
-            }
-
-            const isBodyEmpty = checkIfTheBodyIsEmpty(paramsToValidate)
+            const isBodyEmpty = checkIfTheBodyIsEmpty(updateTransactionParams)
             if (isBodyEmpty) {
                 return bodyIsEmptyResponse()
             }
 
             const validateUpdateTransactionParams =
-                await updateTransactionSchema.parseAsync(paramsToValidate)
+                await updateTransactionSchema.parseAsync(
+                    updateTransactionParams,
+                )
             const updateParams = {
                 ...validateUpdateTransactionParams,
                 userId,
