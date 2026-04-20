@@ -27,7 +27,7 @@ const makeFakeRequest = () => ({
 })
 
 describe('Update Transaction Controller ', () => {
-    it('should update a user', async () => {
+    it('should update a transaction', async () => {
         const { sut, updateTransactionUseCaseMock } = makeSut()
         const httpReq = makeFakeRequest()
 
