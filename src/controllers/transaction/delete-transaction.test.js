@@ -48,6 +48,22 @@ describe('Delete Transaction Controller', () => {
         expect(deleteTransactionUseCaseMock.execute).not.toHaveBeenCalled()
     })
 
+    it('should fail if user id is invalid', async () => {
+        const { sut, deleteTransactionUseCaseMock } = makeSut()
+
+        const deletedTransaction = await sut.execute({
+            params: {
+                id: faker.string.uuid(),
+            },
+            query: {
+                userId: 'invalid',
+            },
+        })
+
+        expect(deletedTransaction.statusCode).toBe(400)
+        expect(deleteTransactionUseCaseMock.execute).not.toHaveBeenCalled()
+    })
+
     it('should fail if id not exist', async () => {
         const { sut, deleteTransactionUseCaseMock } = makeSut()
         const httpReq = makeFakeRequest()
