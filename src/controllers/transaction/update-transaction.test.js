@@ -119,7 +119,39 @@ describe('Update Transaction Controller ', () => {
         expect(updateTransactionUseCaseMock.execute).not.toHaveBeenCalled()
     })
 
-    it('should fail if amount is invalid', async () => {
+    it('should fail if user id is invalid', async () => {
+        const { sut, updateTransactionUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
+
+        updateTransactionUseCaseMock.execute.mockResolvedValue(httpReq)
+
+        const updateTransaction = await sut.execute({
+            params: httpReq.params,
+            query: { userId: 'invalid' },
+            body: httpReq.body,
+        })
+
+        expect(updateTransaction.statusCode).toBe(400)
+        expect(updateTransactionUseCaseMock.execute).not.toHaveBeenCalled()
+    })
+
+    it('should fail if transaction id is invalid', async () => {
+        const { sut, updateTransactionUseCaseMock } = makeSut()
+        const httpReq = makeFakeRequest()
+
+        updateTransactionUseCaseMock.execute.mockResolvedValue(httpReq)
+
+        const updateTransaction = await sut.execute({
+            params: { id: 'invalid' },
+            query: httpReq.query,
+            body: httpReq.body,
+        })
+
+        expect(updateTransaction.statusCode).toBe(400)
+        expect(updateTransactionUseCaseMock.execute).not.toHaveBeenCalled()
+    })
+
+    it('should fail if system is down', async () => {
         const { sut, updateTransactionUseCaseMock } = makeSut()
         const httpReq = makeFakeRequest()
 
