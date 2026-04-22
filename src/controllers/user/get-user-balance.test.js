@@ -1,3 +1,4 @@
+import { UserNotFoundError } from '../../error/user.js'
 import { GetUserBalanceController } from '../index.js'
 import { faker } from '@faker-js/faker'
 
@@ -38,7 +39,6 @@ describe('Get User Balance Controller', () => {
         getUserBalanceUseCaseMock.execute.mockResolvedValue(userBalance)
 
         const balance = await sut.execute(httpReq)
-        console.log('RESPOSTA DO CONTROLLER:', balance)
 
         expect(balance.statusCode).toBe(200)
         expect(getUserBalanceUseCaseMock.execute).toHaveBeenCalledTimes(1)
@@ -46,11 +46,26 @@ describe('Get User Balance Controller', () => {
 
     it('Should fail if userId is not provided', async () => {
         const { sut } = makeSut()
-        const httpReq = fakeUser({ params: {} })
 
-        const balance = await sut.execute(httpReq)
+        const balance = await sut.execute({
+            params: {
+                userId: '',
+            },
+        })
 
-        expect(balance.statusCode).toBe(404)
+        expect(balance.statusCode).toBe(400)
+    })
+
+    it('Should fail if userId is invalid', async () => {
+        const { sut } = makeSut()
+
+        const balance = await sut.execute({
+            params: {
+                userId: 'invalid',
+            },
+        })
+
+        expect(balance.statusCode).toBe(400)
     })
 
     it('Should fail if user not have balance to show', async () => {
@@ -77,5 +92,20 @@ describe('Get User Balance Controller', () => {
         const response = await sut.execute(httpReq)
 
         expect(response.statusCode).toBe(500)
+    })
+
+    it('Should fail if user is not found', async () => {
+        const { sut, getUserBalanceUseCaseMock } = makeSut()
+        const httpReq = fakeUser()
+
+        getUserBalanceUseCaseMock.execute.mockRejectedValue(
+            new UserNotFoundError('User not found'),
+        )
+
+        jest.spyOn(console, 'error').mockImplementation(() => {})
+
+        const response = await sut.execute(httpReq)
+
+        expect(response.statusCode).toBe(404)
     })
 })
