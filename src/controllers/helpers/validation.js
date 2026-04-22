@@ -2,15 +2,20 @@ import validator from 'validator'
 import { badRequest } from './index.js'
 
 //ID//
-export const checkIfIdIsValid = (id) => validator.isUUID(id)
+export const checkIfIdIsValid = (id) => {
+    if (typeof id !== 'string') {
+        return false
+    }
+    return validator.isUUID(id)
+}
 export const invalidIdResponse = () =>
     badRequest({ message: 'The Id is not valid' })
 
 //CAMPOS OBRIGATORIOS//
 export const requiredFieldsIsMissingResponse = (field) => {
-    return {
+    return badRequest({
         message: `The field ${field} can not be empty`,
-    }
+    })
 }
 
 //VALIDADANDO CAMPOS OBRIGATORIOS//
@@ -55,9 +60,9 @@ export const bodyIsEmptyResponse = () => {
 
 //SE OS CAMPOS PARA ATUALIZAR SÃO PERMITIDOS//
 
-export const checkIfSomeFieldIsNotAllowed = (params, allowedFields) => {
+export const checkIfSomeFieldIsNotAllowed = (params, allowedFields) =>
     Object.keys(params).some((field) => !allowedFields.includes(field))
-}
+
 export const someFieldIsNotAllowedResponse = () =>
     badRequest({
         message: 'Some field provide is not allowed',

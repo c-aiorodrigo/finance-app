@@ -47,6 +47,19 @@ describe('Get Transaction By User Id', () => {
         expect(getTransactionByUserIdUseCaseMock.execute).not.toHaveBeenCalled()
     })
 
+    it('should fail if user id is empty', async () => {
+        const { sut, getTransactionByUserIdUseCaseMock } = makeSut()
+
+        const response = await sut.execute({
+            query: {
+                userId: '',
+            },
+        })
+
+        expect(response.statusCode).toBe(400)
+        expect(getTransactionByUserIdUseCaseMock.execute).not.toHaveBeenCalled()
+    })
+
     it('should return 404 if user not have transactions', async () => {
         const { sut, getTransactionByUserIdUseCaseMock } = makeSut()
         const httpReq = makeFakeRequest()
